@@ -1,0 +1,21 @@
+.game {
+    &__score {
+        display: flex;
+        width: 100%;
+        justify-content: space-between;
+        padding: 0 20px;
+
+        &_img {
+            height: 50px;
+        }
+
+        &_count {
+            display: flex;
+            width: 80%;
+            height: 100%;
+            align-items: center;
+            gap: 30px;
+        }
+    }
+}
+

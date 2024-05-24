@@ -1,0 +1,2 @@
+export const WHEEL_SPINNING_SECONDS = 5_500;
+

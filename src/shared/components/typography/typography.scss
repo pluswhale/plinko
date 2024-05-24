@@ -1,0 +1,36 @@
+@import '../../../assets/styles/variables.scss';
+
+.body1,
+.body2,
+.caption,
+.button,
+.overline {
+    font-family: 'Montserrat', sans-serif;
+    margin: 0;
+    padding: 0;
+    color: $whiteColor;
+}
+
+.body1 {
+}
+
+.body2 {
+}
+
+.caption {
+}
+
+.button {
+    font-size: 0.875rem; /* 14px */
+    text-transform: uppercase;
+    line-height: 1.75;
+    font-weight: 500;
+}
+
+.overline {
+    font-size: 0.625rem; /* 10px */
+    text-transform: uppercase;
+    line-height: 2.5;
+    letter-spacing: 0.1em;
+}
+

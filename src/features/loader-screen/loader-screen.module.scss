@@ -1,0 +1,27 @@
+.wrapper {
+    width: 100vw;
+    height: 100vh;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    .container {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 40px;
+    }
+
+    .logo_and_heading {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .heading_wrapper {
+        transform: translateY(-16px);
+        z-index: 2;
+    }
+}
+
