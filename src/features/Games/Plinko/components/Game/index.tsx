@@ -3,9 +3,7 @@ import { Bodies, Body, Composite, Engine, Events, IEventCollision, Render, Runne
 import { useCallback, useEffect, useState } from 'react';
 
 import { LinesType, MultiplierValues } from './@types';
-import { BetActions } from './components/BetActions';
 import { PlinkoGameBody } from './components/GameBody';
-import { MultiplierHistory } from './components/MultiplierHistory';
 import { config } from './config';
 import { getMultiplierByLinesQnt, getMultiplierSound } from './config/multipliers';
 import { useAuthStore } from '../../../../../store/auth';
@@ -20,14 +18,14 @@ export function Game() {
     // #region States
     const incrementCurrentBalance = useAuthStore((state) => state.incrementBalance);
     const engine = Engine.create();
-    const [lines, setLines] = useState<LinesType>(8);
+    const [lines] = useState<LinesType>(8);
     const [betValue, setBetValue] = useState(0);
     const inGameBallsCount = useGameStore((state) => state.gamesRunning);
     const incrementInGameBallsCount = useGameStore((state) => state.incrementGamesRunning);
     const decrementInGameBallsCount = useGameStore((state) => state.decrementGamesRunning);
     const currentBalance = useAuthStore((state) => state.wallet.balance);
     const decrementCurrentBalance = useAuthStore((state) => state.decrementBalance);
-    const [lastMultipliers, setLastMultipliers] = useState<number[]>([]);
+    // const [setLastMultipliers] = useState<number[]>([]);
     const { pins: pinsConfig, colors, ball: ballConfig, engine: engineConfig, world: worldConfig } = config;
 
     const worldWidth: number = worldConfig.width;
@@ -113,7 +111,7 @@ export function Game() {
             const maxBallX = worldWidth / 2 - pinsConfig.pinSize * 3 - pinsConfig.pinGap + pinsConfig.pinGap / 2;
 
             const ballX = random(minBallX, maxBallX);
-            const ballColor = ballValue <= 0 ? colors.text : colors.purple;
+            // const ballColor = ballValue <= 0 ? colors.text : colors.purple;
             const ball = Bodies.circle(ballX, 20, ballConfig.ballSize, {
                 restitution: 1,
                 friction: 0.6,
@@ -215,7 +213,7 @@ export function Game() {
         multiplierSong.currentTime = 0;
         multiplierSong.volume = 0.2;
         multiplierSong.play();
-        setLastMultipliers((prev) => [multiplierValue, prev[0], prev[1], prev[2]]);
+        // setLastMultipliers((prev) => [multiplierValue, prev[0], prev[1], prev[2]]);
 
         console.log(ballValue, 'ballValue');
 

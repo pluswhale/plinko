@@ -10,7 +10,7 @@ export const Routing: FC = (): ReactElement => {
         <Suspense fallback={<LoaderScreen />}>
             <BrowserRouter>
                 <Routes>
-                    <Route path="plinko" element={<MainPage />} />
+                    <Route path="whisky-plinko" element={<MainPage />} />
                     <Route path="*" element={<div>Not found</div>} />
                 </Routes>
             </BrowserRouter>
