@@ -10,8 +10,9 @@ import { useAuthStore } from '../../../../../store/auth';
 import { useGameStore } from '../../../../../store/game';
 import { random } from '../../../../../shared/utils/random';
 import { Button } from '../../../../../shared/components/button';
-import styles from './index.module.scss';
 import { Typography } from '../../../../../shared/components/typography';
+import styles from './index.module.scss';
+
 import cat from '../../../../../assets/images/kitty.png';
 
 export function Game() {
@@ -19,12 +20,14 @@ export function Game() {
     const incrementCurrentBalance = useAuthStore((state) => state.incrementBalance);
     const engine = Engine.create();
     const [lines] = useState<LinesType>(8);
+    const currentBalance = useAuthStore((state) => state.wallet.balance);
     const [betValue, setBetValue] = useState(0);
+    const decrementCurrentBalance = useAuthStore((state) => state.decrementBalance);
     const inGameBallsCount = useGameStore((state) => state.gamesRunning);
+
     const incrementInGameBallsCount = useGameStore((state) => state.incrementGamesRunning);
     const decrementInGameBallsCount = useGameStore((state) => state.decrementGamesRunning);
-    const currentBalance = useAuthStore((state) => state.wallet.balance);
-    const decrementCurrentBalance = useAuthStore((state) => state.decrementBalance);
+
     // const [setLastMultipliers] = useState<number[]>([]);
     const { pins: pinsConfig, colors, ball: ballConfig, engine: engineConfig, world: worldConfig } = config;
 
@@ -97,6 +100,21 @@ export function Game() {
 
     function removeInGameBall() {
         decrementInGameBallsCount();
+    }
+
+    function bet(betValue: number) {
+        addBall(betValue);
+    }
+
+    async function handleRunBet() {
+        if (inGameBallsCount >= 15) return;
+        if (betValue > currentBalance) {
+            setBetValue(currentBalance);
+            return;
+        }
+        bet(betValue);
+        if (betValue <= 0) return;
+        await decrementCurrentBalance(betValue);
     }
 
     const addBall = useCallback(
@@ -196,10 +214,6 @@ export function Game() {
 
     Composite.add(engine.world, [...pins, ...multipliersBodies, leftWall, rightWall, floor]);
 
-    function bet(betValue: number) {
-        addBall(betValue);
-    }
-
     async function onCollideWithMultiplier(ball: Body, multiplier: Body) {
         ball.collisionFilter.group = 2;
         World.remove(engine.world, ball);
@@ -236,34 +250,30 @@ export function Game() {
         }
     }
 
-    async function handleRunBet() {
-        if (inGameBallsCount >= 15) return;
-        if (betValue > currentBalance) {
-            setBetValue(currentBalance);
-            return;
-        }
-        bet(betValue);
-        if (betValue <= 0) return;
-        await decrementCurrentBalance(betValue);
-    }
-
     Events.on(engine, 'collisionActive', onBodyCollision);
 
     return (
-        <div className="flex h-fit flex-col-reverse items-center justify-center gap-4 md:flex-row">
+        <div className="flex h-fit flex-col items-center justify-center gap-4 md:flex-row">
             {/* <BetActions inGameBallsCount={inGameBallsCount} onChangeLines={setLines} onRunBet={bet} /> */}
             {/* <MultiplierHistory multiplierHistory={lastMultipliers} /> */}
             <div className="flex flex-1 items-center justify-center">
                 <PlinkoGameBody />
             </div>
             {/* <button onClick={bet}>Bet</button> */}
+
             <div className={styles.game__score}>
                 <div className={styles.game__score_count}>
                     <img className={styles.game__score_img} src={cat} />
-                    <Typography>{currentBalance}</Typography>
+                    <Typography fontSize="28px">{currentBalance || 5000}</Typography>
                 </div>
-
-                <Button width="20%" onClick={handleRunBet} text="GO" />
+                <Button
+                    stylesForTexts={{ main: { fontSize: '32px' }, sub: {} }}
+                    fontSize="60px"
+                    fontFamily="Montserrat, sans-serif"
+                    width="30%"
+                    onClick={handleRunBet}
+                    text="GO"
+                />
             </div>
         </div>
     );

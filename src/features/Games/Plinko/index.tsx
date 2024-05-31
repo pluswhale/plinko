@@ -20,6 +20,10 @@ export function PlinkoGamePage() {
         };
     }, [gamesRunning]);
 
-    return <Game />;
+    return (
+        <>
+            <Game />
+        </>
+    );
 }
 
