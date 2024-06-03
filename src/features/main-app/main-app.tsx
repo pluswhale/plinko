@@ -9,7 +9,6 @@ import { Logo } from '../../shared/components/logo';
 
 const MainApp: FC = (): ReactElement => {
     const { userData, isMobile } = useAppContext();
-
     return (
         <div className={styles.app__wrapper}>
             <div className={styles.app__container}>

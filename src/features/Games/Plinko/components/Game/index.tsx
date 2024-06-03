@@ -1,45 +1,43 @@
 import ballAudio from '../../../../../assets/sounds/ball.wav';
 import { Bodies, Body, Composite, Engine, Events, IEventCollision, Render, Runner, World } from 'matter-js';
 import { useCallback, useEffect, useState } from 'react';
-
 import { LinesType, MultiplierValues } from './@types';
 import { PlinkoGameBody } from './components/GameBody';
 import { config } from './config';
 import { getMultiplierByLinesQnt, getMultiplierSound } from './config/multipliers';
-import { useAuthStore } from '../../../../../store/auth';
 import { useGameStore } from '../../../../../store/game';
 import { random } from '../../../../../shared/utils/random';
 import { Button } from '../../../../../shared/components/button';
-import { Typography } from '../../../../../shared/components/typography';
 import styles from './index.module.scss';
-
 import cat from '../../../../../assets/images/kitty.png';
+import { Input } from '../../../../../shared/components/input/input';
+import { FormProvider, useForm } from 'react-hook-form';
+import { useAppContext } from '../../../../../app/providers/AppContext';
 
 export function Game() {
     // #region States
-    const incrementCurrentBalance = useAuthStore((state) => state.incrementBalance);
     const engine = Engine.create();
     const [lines] = useState<LinesType>(8);
-    const currentBalance = useAuthStore((state) => state.wallet.balance);
-    const [betValue, setBetValue] = useState(0);
-    const decrementCurrentBalance = useAuthStore((state) => state.decrementBalance);
     const inGameBallsCount = useGameStore((state) => state.gamesRunning);
+    const { userData, decrementCurrentBalance, incrementCurrentBalance } = useAppContext();
 
     const incrementInGameBallsCount = useGameStore((state) => state.incrementGamesRunning);
     const decrementInGameBallsCount = useGameStore((state) => state.decrementGamesRunning);
 
-    // const [setLastMultipliers] = useState<number[]>([]);
+    const points = useGameStore((state) => state.points);
+    const changePoints = useGameStore((state) => state.changePoints);
+    const methods = useForm();
+
     const { pins: pinsConfig, colors, ball: ballConfig, engine: engineConfig, world: worldConfig } = config;
 
-    const worldWidth: number = worldConfig.width;
-    const worldHeight: number = worldConfig.height;
+    const worldWidth = worldConfig.width;
+    const worldHeight = worldConfig.height;
     // #endregion
 
     useEffect(() => {
         engine.gravity.y = engineConfig.engineGravity;
         const element = document.getElementById('plinko');
         const render = Render.create({
-            // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
             element: element!,
             bounds: {
                 max: {
@@ -79,9 +77,7 @@ export function Game() {
         const lineWidth = linePins * pinsConfig.pinGap;
         for (let i = 0; i < linePins; i++) {
             const pinX = worldWidth / 2 - lineWidth / 2 + i * pinsConfig.pinGap + pinsConfig.pinGap / 2;
-
-            const pinY = worldWidth / lines + l * pinsConfig.pinGap + pinsConfig.pinGap;
-
+            const pinY = worldHeight / lines + l * pinsConfig.pinGap + pinsConfig.pinGap;
             const pin = Bodies.circle(pinX, pinY, pinsConfig.pinSize, {
                 label: `pin-${i}`,
                 render: {
@@ -103,18 +99,16 @@ export function Game() {
     }
 
     function bet(betValue: number) {
+        console.log(betValue);
         addBall(betValue);
     }
 
     async function handleRunBet() {
         if (inGameBallsCount >= 15) return;
-        if (betValue > currentBalance) {
-            setBetValue(currentBalance);
-            return;
-        }
-        bet(betValue);
-        if (betValue <= 0) return;
-        await decrementCurrentBalance(betValue);
+        console.log('state bet value', points);
+        bet(points);
+        if (points <= 0) return;
+        decrementCurrentBalance(points);
     }
 
     const addBall = useCallback(
@@ -125,11 +119,10 @@ export function Game() {
             ballSound.currentTime = 0;
             ballSound.play();
 
-            const minBallX = worldWidth / 2 - pinsConfig.pinSize * 3 + pinsConfig.pinGap;
-            const maxBallX = worldWidth / 2 - pinsConfig.pinSize * 3 - pinsConfig.pinGap + pinsConfig.pinGap / 2;
-
+            const minBallX = worldWidth / 2 - (pinsConfig.pinSize + pinsConfig.pinGap);
+            const maxBallX = worldWidth / 2 + (pinsConfig.pinSize + pinsConfig.pinGap);
             const ballX = random(minBallX, maxBallX);
-            // const ballColor = ballValue <= 0 ? colors.text : colors.purple;
+
             const ball = Bodies.circle(ballX, 20, ballConfig.ballSize, {
                 restitution: 1,
                 friction: 0.6,
@@ -150,65 +143,64 @@ export function Game() {
     );
 
     const leftWall = Bodies.rectangle(
-        worldWidth / 3 - pinsConfig.pinSize * pinsConfig.pinGap - pinsConfig.pinGap,
-        worldWidth / 2 - pinsConfig.pinSize,
-        worldWidth * 2,
-        40,
+        pinsConfig.pinGap / 2 - 30, // x-coordinate
+        worldHeight / 2,
+        20, // Reduced width to 20 (you can adjust this value as needed)
+        worldHeight,
         {
-            angle: 90,
             render: {
-                visible: false,
+                visible: true,
             },
             isStatic: true,
         },
     );
+
     const rightWall = Bodies.rectangle(
-        worldWidth - pinsConfig.pinSize * pinsConfig.pinGap - pinsConfig.pinGap - pinsConfig.pinGap / 2,
-        worldWidth / 2 - pinsConfig.pinSize,
-        worldWidth * 2,
-        40,
+        worldWidth - pinsConfig.pinGap / 2 + 30, // x-coordinate
+        worldHeight / 2,
+        20, // Reduced width to 20 (you can adjust this value as needed)
+        worldHeight,
         {
-            angle: -90,
             render: {
-                visible: false,
+                visible: true,
             },
             isStatic: true,
         },
     );
-    const floor = Bodies.rectangle(0, worldWidth + 10, worldWidth * 10, 40, {
-        label: 'block-1',
+
+    const floor = Bodies.rectangle(worldWidth / 2, worldHeight - 40, worldWidth, 20, {
+        label: 'floor',
         render: {
+            fillStyle: 'white',
             visible: false,
         },
         isStatic: true,
     });
 
     const multipliers = getMultiplierByLinesQnt(lines);
-
     const multipliersBodies: Body[] = [];
 
-    let lastMultiplierX: number = worldWidth / 2 - (pinsConfig.pinGap / 2) * lines - pinsConfig.pinGap;
+    // Calculate the initial X position for the first multiplier
+    const multiplierGap = worldWidth / multipliers.length;
+    let lastMultiplierX = multiplierGap / 2;
 
     multipliers.forEach((multiplier) => {
-        const blockSize = 20; // height and width
-        const multiplierBody = Bodies.rectangle(
-            lastMultiplierX + 20,
-            worldWidth / lines + lines * pinsConfig.pinGap + pinsConfig.pinGap,
-            blockSize,
-            blockSize,
-            {
-                label: multiplier.label,
-                isStatic: true,
-                render: {
-                    sprite: {
-                        xScale: 1,
-                        yScale: 1,
-                        texture: multiplier.img,
-                    },
+        const blockWidth = 40;
+        const blockHeight = 40;
+        const multiplierBody = Bodies.rectangle(lastMultiplierX, worldHeight - 70, blockWidth, blockHeight, {
+            label: multiplier.label,
+            isStatic: true,
+            render: {
+                fillStyle: 'red',
+                sprite: {
+                    xScale: 1,
+                    yScale: 1,
+                    texture: multiplier.img,
                 },
             },
-        );
-        lastMultiplierX = multiplierBody.position.x;
+        });
+
+        lastMultiplierX += multiplierGap;
         multipliersBodies.push(multiplierBody);
     });
 
@@ -219,22 +211,19 @@ export function Game() {
         World.remove(engine.world, ball);
         removeInGameBall();
         const ballValue = ball.label.split('-')[1];
-        console.log('ballValue', ball.label);
-
         const multiplierValue = +multiplier.label.split('-')[1] as MultiplierValues;
+
+        console.log('multu value, ', multiplierValue);
 
         const multiplierSong = new Audio(getMultiplierSound(multiplierValue));
         multiplierSong.currentTime = 0;
         multiplierSong.volume = 0.2;
         multiplierSong.play();
-        // setLastMultipliers((prev) => [multiplierValue, prev[0], prev[1], prev[2]]);
-
-        console.log(ballValue, 'ballValue');
 
         if (+ballValue <= 0) return;
 
         const newBalance = +ballValue * multiplierValue;
-        console.log('newBalance:', newBalance);
+        console.log('newBalance', newBalance);
 
         await incrementCurrentBalance(newBalance);
     }
@@ -243,36 +232,54 @@ export function Game() {
         const pairs = event.pairs;
         for (const pair of pairs) {
             const { bodyA, bodyB } = pair;
-            console.log('pair', pair);
 
-            if (bodyB.label.includes('ball') && bodyA.label.includes('block'))
+            if (bodyB.label.includes('ball') && bodyA.label.includes('block')) {
                 await onCollideWithMultiplier(bodyB, bodyA);
+            }
         }
     }
 
-    Events.on(engine, 'collisionActive', onBodyCollision);
+    Events.on(engine, 'collisionStart', onBodyCollision);
+
+    // Points input handling
+    const onChangePoints = (value: string) => {
+        if (value === '') {
+            changePoints('0');
+        }
+
+        const isNumeric = /^\d+$/.test(value);
+        if (!isNumeric) {
+            return; // Exit the function if the input is not a number
+        }
+
+        if (userData?.unclaimedTokens && +value > userData?.unclaimedTokens) {
+            changePoints(String(userData?.unclaimedTokens));
+        }
+
+        changePoints(value);
+    };
 
     return (
-        <div className="flex h-fit flex-col items-center justify-center gap-4 md:flex-row">
-            {/* <BetActions inGameBallsCount={inGameBallsCount} onChangeLines={setLines} onRunBet={bet} /> */}
-            {/* <MultiplierHistory multiplierHistory={lastMultipliers} /> */}
+        <div className="flex h-fit flex-col items-center justify-center md:flex-row">
             <div className="flex flex-1 items-center justify-center">
                 <PlinkoGameBody />
             </div>
-            {/* <button onClick={bet}>Bet</button> */}
-
             <div className={styles.game__score}>
                 <div className={styles.game__score_count}>
                     <img className={styles.game__score_img} src={cat} />
-                    <Typography fontSize="28px">{currentBalance || 5000}</Typography>
+                    <FormProvider {...methods}>
+                        <Input value={String(points)} onChange={onChangePoints} name={'points'} />
+                    </FormProvider>
                 </div>
                 <Button
+                    isDisabled={points <= 0}
                     stylesForTexts={{ main: { fontSize: '32px' }, sub: {} }}
                     fontSize="60px"
                     fontFamily="Montserrat, sans-serif"
-                    width="30%"
+                    width="40%"
                     onClick={handleRunBet}
                     text="GO"
+                    backgroundColor={points <= 0 ? 'gray' : undefined}
                 />
             </div>
         </div>

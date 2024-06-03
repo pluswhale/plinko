@@ -16,6 +16,7 @@ type Props = {
     textTransform?: any;
     borderRadius?: string;
     stylesForTexts?: { main: CSSProperties; sub: CSSProperties };
+    isDisabled?: boolean;
     onClick?: () => void;
 };
 
@@ -35,6 +36,7 @@ export const Button: FC<Props> = (props): ReactElement => {
         textTransform = 'uppercase',
         borderRadius,
         stylesForTexts,
+        isDisabled,
         onClick,
     } = props;
 
@@ -54,6 +56,7 @@ export const Button: FC<Props> = (props): ReactElement => {
     return (
         <button
             onClick={onClick || undefined}
+            disabled={!!isDisabled}
             style={{
                 fontSize,
                 height,

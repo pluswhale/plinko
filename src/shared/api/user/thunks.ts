@@ -1,5 +1,4 @@
-import { BuySpinsBody, ReferralBody, SpinWheelBody } from './types';
-import { userApi } from './user';
+import { UpdateBalance, userApi } from './user';
 
 export const loginUser = async (userId: string) => {
     try {
@@ -24,27 +23,9 @@ export const fetchUserById = async (userId: string) => {
     }
 };
 
-export const spinWheelByUser = async (userId: string, body: SpinWheelBody) => {
+export const updateBalance = async (userId: string, body: UpdateBalance) => {
     try {
-        const res = await userApi.spinWheel(userId, body);
-        return res;
-    } catch (err) {
-        console.error(err);
-    }
-};
-
-export const buySpinsByUser = async (userId: string, body: BuySpinsBody) => {
-    try {
-        const res = await userApi.buySpins(userId, body);
-        return res;
-    } catch (err) {
-        console.error(err);
-    }
-};
-
-export const referralUser = async (referredUserId: string, body: ReferralBody) => {
-    try {
-        const res = await userApi.referral(referredUserId, body);
+        const res = await userApi.updateBalance(userId, body);
         return res.data;
     } catch (err) {
         console.error(err);

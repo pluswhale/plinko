@@ -1,21 +1,22 @@
 import { colors } from '../../../../../../styles/colors';
+
 const pins = {
     startPins: 3,
-    pinSize: 2,
-    pinGap: 20,
+    pinSize: 5.7, // Updated pin size
+    pinGap: 40, // Updated pin gap
 };
 
 const ball = {
-    ballSize: 5.7,
+    ballSize: 10, // Updated ball size
 };
 
 const engine = {
-    engineGravity: 1.0,
+    engineGravity: 1,
 };
 
 const world = {
-    width: 390,
-    height: 300,
+    width: 390, // Adjusted world width
+    height: 500, // Adjusted world height
 };
 
 export const config = {
