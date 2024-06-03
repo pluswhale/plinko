@@ -99,13 +99,11 @@ export function Game() {
     }
 
     function bet(betValue: number) {
-        console.log(betValue);
         addBall(betValue);
     }
 
     async function handleRunBet() {
         if (inGameBallsCount >= 15) return;
-        console.log('state bet value', points);
         bet(points);
         if (points <= 0) return;
         decrementCurrentBalance(points);
@@ -213,8 +211,6 @@ export function Game() {
         const ballValue = ball.label.split('-')[1];
         const multiplierValue = +multiplier.label.split('-')[1] as MultiplierValues;
 
-        console.log('multu value, ', multiplierValue);
-
         const multiplierSong = new Audio(getMultiplierSound(multiplierValue));
         multiplierSong.currentTime = 0;
         multiplierSong.volume = 0.2;
@@ -222,10 +218,10 @@ export function Game() {
 
         if (+ballValue <= 0) return;
 
-        const newBalance = +ballValue * multiplierValue;
+        const newBalance = +(+ballValue * multiplierValue).toFixed(2); // Ensure that newBalance is a number with two decimal places
         console.log('newBalance', newBalance);
 
-        await incrementCurrentBalance(newBalance);
+        incrementCurrentBalance(newBalance);
     }
 
     async function onBodyCollision(event: IEventCollision<Engine>) {
