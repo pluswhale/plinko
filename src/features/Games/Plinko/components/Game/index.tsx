@@ -81,7 +81,7 @@ export function Game() {
             const pin = Bodies.circle(pinX, pinY, pinsConfig.pinSize, {
                 label: `pin-${i}`,
                 render: {
-                    fillStyle: '#F5DCFF',
+                    fillStyle: 'gray',
                 },
                 isStatic: true,
             });
@@ -132,6 +132,8 @@ export function Game() {
                 },
                 render: {
                     fillStyle: 'red',
+                    strokeStyle: 'white', // Add stroke style for the border
+                    lineWidth: 3, // Specify the width of the border
                 },
                 isStatic: false,
             });
@@ -224,10 +226,40 @@ export function Game() {
         incrementCurrentBalance(newBalance);
     }
 
+    async function onCollideWithPin(pin: Body) {
+        // Store the original fill style
+        const originalFillStyle = pin.render.fillStyle;
+
+        // Animate the pin
+        pin.render.fillStyle = 'white'; // Change fill style to white temporarily
+
+        // Play sound when the ball hits the pin
+        const hitSound = new Audio(ballAudio);
+        hitSound.volume = 0.5; // Adjust volume as needed
+        hitSound.play(); // Play the sound
+
+        // Set up animation to gradually transition the pin color back to its original gray color
+        let animationTime = 0;
+        const animationDuration = 1000; // Animation duration in milliseconds
+        const animationInterval = setInterval(() => {
+            animationTime += 1000 / 60; // 60 frames per second
+            const progress = animationTime / animationDuration;
+            pin.render.fillStyle = `rgba(255, 255, 255, ${1 - progress})`; // Transition back to white color
+            if (progress >= 1) {
+                clearInterval(animationInterval); // Stop the animation when duration is reached
+                pin.render.fillStyle = originalFillStyle; // Restore original fill style (gray)
+            }
+        }, 1000 / 60); // 60 frames per second
+    }
+
     async function onBodyCollision(event: IEventCollision<Engine>) {
         const pairs = event.pairs;
         for (const pair of pairs) {
             const { bodyA, bodyB } = pair;
+
+            if (bodyA.label.includes('pin')) {
+                await onCollideWithPin(bodyA);
+            }
 
             if (bodyB.label.includes('ball') && bodyA.label.includes('block')) {
                 await onCollideWithMultiplier(bodyB, bodyA);
