@@ -227,19 +227,14 @@ export function Game() {
     }
 
     async function onCollideWithPin(pin: Body) {
-        // Store the original fill style
         const originalFillStyle = 'gray';
+        pin.render.fillStyle = 'white';
 
-        // Animate the pin
-        pin.render.fillStyle = 'white'; // Change fill style to white temporarily
+        // const hitSound = new Audio(ballAudio);
+        // hitSound.volume = 0.5;
+        // hitSound.play();
 
-        // Play sound when the ball hits the pin
-        const hitSound = new Audio(ballAudio);
-        hitSound.volume = 0.5; // Adjust volume as needed
-        hitSound.play(); // Play the sound
-
-        // Set up animation to gradually transition the pin color back to its original gray color
-        const animationDuration = 1000; // Animation duration in milliseconds
+        const animationDuration = 1000;
         const startTime = performance.now();
 
         function animate(time: number) {
