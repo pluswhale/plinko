@@ -1,6 +1,8 @@
 // multiplierImages
 import multiplier0dot3Img from '../../../../../../assets/images/multipliers/multiplier0.3.png';
-import multiplier0dot5Img from '../../../../../../assets/images/multipliers/multiplier0.5.png';
+import multiplier0dot2Img from '../../../../../../assets/images/multipliers/multiplier0.2.png';
+import multiplier4Img from '../../../../../../assets/images/multipliers/multiplier4.png';
+import multiplier30Img from '../../../../../../assets/images/multipliers/multiplier30.png';
 import multiplier1dot5Img from '../../../../../../assets/images/multipliers/multiplier1.5.png';
 import multiplier1Img from '../../../../../../assets/images/multipliers/multiplier1.png';
 import multiplier10Img from '../../../../../../assets/images/multipliers/multiplier10.png';
@@ -27,11 +29,13 @@ const multiplierSounds = {
     88: multiplierBest,
     41: multiplierBest,
     33: multiplierBest,
+    30: multiplierBest,
     25: multiplierBest,
     18: multiplierGood,
     15: multiplierGood,
     10: multiplierGood,
     5: multiplierGood,
+    4: multiplierGood,
     3: multiplierRegular,
     2: multiplierRegular,
     1.5: multiplierRegular,
@@ -109,18 +113,29 @@ const multipliers = {
     0.3: {
         label: 'block-0.3',
         sound: multiplierLow,
-        img: multiplier0dot5Img,
+        img: multiplier0dot3Img,
     },
     0.2: {
         label: 'block-0.2',
         sound: multiplierLow,
-        img: multiplier0dot3Img,
+        img: multiplier0dot2Img,
+    },
+    4: {
+        label: 'block-4',
+        sound: multiplierGood,
+        img: multiplier4Img,
+    },
+    30: {
+        label: 'block-30',
+        sound: multiplierBest,
+        img: multiplier30Img,
     },
 } as const;
 
 export type MultipliersType = keyof typeof multipliers;
 
 export function getMultiplier(value: MultipliersType): MultiplierType {
+    //@ts-ignore
     return multipliers[value];
 }
 
@@ -250,15 +265,15 @@ export const multiplyBlocks9Lines = [
     getMultiplier(10),
 ];
 export const multiplyBlocks8Lines = [
-    getMultiplier(5),
-    getMultiplier(3),
+    getMultiplier(30),
+    getMultiplier(4),
     getMultiplier(1.5),
     getMultiplier(0.3),
     getMultiplier(0.2),
     getMultiplier(0.3),
     getMultiplier(1.5),
-    getMultiplier(3),
-    getMultiplier(5),
+    getMultiplier(4),
+    getMultiplier(30),
 ];
 
 export const multiplyBlocksByLinesQnt = {
@@ -278,6 +293,7 @@ export function getMultiplierByLinesQnt(value: LinesType): MultiplierType[] {
 }
 
 export function getMultiplierSound(value: MultiplierValues): string {
+    //@ts-ignore
     return multiplierSounds[value];
 }
 

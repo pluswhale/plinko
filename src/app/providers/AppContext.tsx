@@ -112,13 +112,19 @@ export const AppContextProvider: React.FC<{ children: ReactElement | ReactElemen
 
     function decrementCurrentBalance(amount: number) {
         setUserData((prev: any) => {
-            return { ...prev, unclaimedTokens: parseFloat(prev?.unclaimedTokens) - amount };
+            return {
+                ...prev,
+                unclaimedTokens: +parseFloat(prev?.unclaimedTokens).toFixed(2) - +parseFloat(String(amount)).toFixed(2),
+            };
         });
     }
 
     function incrementCurrentBalance(amount: number) {
         setUserData((prev: any) => {
-            return { ...prev, unclaimedTokens: parseFloat(prev?.unclaimedTokens) + amount };
+            return {
+                ...prev,
+                unclaimedTokens: +parseFloat(prev?.unclaimedTokens).toFixed(2) + +parseFloat(String(amount)).toFixed(2),
+            };
         });
     }
 

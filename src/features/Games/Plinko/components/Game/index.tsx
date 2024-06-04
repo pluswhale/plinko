@@ -9,7 +9,7 @@ import { useGameStore } from '../../../../../store/game';
 import { random } from '../../../../../shared/utils/random';
 import { Button } from '../../../../../shared/components/button';
 import styles from './index.module.scss';
-import cat from '../../../../../assets/images/kitty.png';
+import cat from '../../../../../assets/images/kit.png';
 import { Input } from '../../../../../shared/components/input/input';
 import { FormProvider, useForm } from 'react-hook-form';
 import { useAppContext } from '../../../../../app/providers/AppContext';
@@ -143,7 +143,7 @@ export function Game() {
     );
 
     const leftWall = Bodies.rectangle(
-        pinsConfig.pinGap / 2 - 30, // x-coordinate
+        pinsConfig.pinGap / 2 - 45, // x-coordinate
         worldHeight / 2,
         20, // Reduced width to 20 (you can adjust this value as needed)
         worldHeight,
@@ -156,7 +156,7 @@ export function Game() {
     );
 
     const rightWall = Bodies.rectangle(
-        worldWidth - pinsConfig.pinGap / 2 + 30, // x-coordinate
+        worldWidth - pinsConfig.pinGap / 2 + 45, // x-coordinate
         worldHeight / 2,
         20, // Reduced width to 20 (you can adjust this value as needed)
         worldHeight,
@@ -193,8 +193,8 @@ export function Game() {
             render: {
                 fillStyle: 'red',
                 sprite: {
-                    xScale: 1,
-                    yScale: 1,
+                    xScale: 0.35,
+                    yScale: 0.35,
                     texture: multiplier.img,
                 },
             },
@@ -220,7 +220,7 @@ export function Game() {
 
         if (+ballValue <= 0) return;
 
-        const newBalance = +(+ballValue * multiplierValue).toFixed(2); // Ensure that newBalance is a number with two decimal places
+        const newBalance = parseFloat((+ballValue * multiplierValue).toFixed(2)); // Ensure that newBalance is a number with two decimal places
         console.log('newBalance', newBalance);
 
         incrementCurrentBalance(newBalance);
@@ -228,7 +228,7 @@ export function Game() {
 
     async function onCollideWithPin(pin: Body) {
         // Store the original fill style
-        const originalFillStyle = pin.render.fillStyle;
+        const originalFillStyle = 'gray';
 
         // Animate the pin
         pin.render.fillStyle = 'white'; // Change fill style to white temporarily
@@ -239,17 +239,21 @@ export function Game() {
         hitSound.play(); // Play the sound
 
         // Set up animation to gradually transition the pin color back to its original gray color
-        let animationTime = 0;
         const animationDuration = 1000; // Animation duration in milliseconds
-        const animationInterval = setInterval(() => {
-            animationTime += 1000 / 60; // 60 frames per second
-            const progress = animationTime / animationDuration;
-            pin.render.fillStyle = `rgba(255, 255, 255, ${1 - progress})`; // Transition back to white color
-            if (progress >= 1) {
-                clearInterval(animationInterval); // Stop the animation when duration is reached
-                pin.render.fillStyle = originalFillStyle; // Restore original fill style (gray)
+        const startTime = performance.now();
+
+        function animate(time: number) {
+            const elapsedTime = time - startTime;
+            const progress = Math.min(elapsedTime / animationDuration, 1);
+            pin.render.fillStyle = `rgba(255, 255, 255, ${1 - progress})`;
+            if (progress < 1) {
+                requestAnimationFrame(animate);
+            } else {
+                pin.render.fillStyle = originalFillStyle;
             }
-        }, 1000 / 60); // 60 frames per second
+        }
+
+        requestAnimationFrame(animate);
     }
 
     async function onBodyCollision(event: IEventCollision<Engine>) {
