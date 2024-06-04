@@ -81,7 +81,7 @@ export function Game() {
             const pin = Bodies.circle(pinX, pinY, pinsConfig.pinSize, {
                 label: `pin-${i}`,
                 render: {
-                    fillStyle: 'gray',
+                    fillStyle: '#4D506A',
                 },
                 isStatic: true,
             });
@@ -227,8 +227,13 @@ export function Game() {
     }
 
     async function onCollideWithPin(pin: Body) {
-        const originalFillStyle = 'gray';
+        const originalFillStyle = '#4D506A';
+        const originalStrokeStyle = 'none';
+        const originalLineWidth = 0;
+
         pin.render.fillStyle = 'white';
+        pin.render.strokeStyle = 'white'; // Initial stroke color
+        pin.render.lineWidth = 3; // Stroke width
 
         // const hitSound = new Audio(ballAudio);
         // hitSound.volume = 0.5;
@@ -240,11 +245,21 @@ export function Game() {
         function animate(time: number) {
             const elapsedTime = time - startTime;
             const progress = Math.min(elapsedTime / animationDuration, 1);
+
             pin.render.fillStyle = `rgba(255, 255, 255, ${1 - progress})`;
+
+            // Calculate the stroke color transition
+            const r = Math.round(255 * (1 - progress) + 77 * progress); // Assuming original stroke color is rgb(77, 80, 106)
+            const g = Math.round(255 * (1 - progress) + 80 * progress);
+            const b = Math.round(255 * (1 - progress) + 106 * progress);
+            pin.render.strokeStyle = `rgba(${r}, ${g}, ${b}, 1)`;
+
             if (progress < 1) {
                 requestAnimationFrame(animate);
             } else {
                 pin.render.fillStyle = originalFillStyle;
+                pin.render.strokeStyle = originalStrokeStyle;
+                pin.render.lineWidth = originalLineWidth;
             }
         }
 
