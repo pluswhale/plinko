@@ -2,7 +2,7 @@
     &__score {
         display: flex;
         width: 100%;
-        padding: 0 20px;
+        padding: 0 15px;
         gap: 10px;
 
         @media screen and (max-height: 780px) {
@@ -21,7 +21,7 @@
             width: 80%;
             height: 100%;
             align-items: center;
-            gap: 30px;
+            gap: 10px;
             background-color: #252637; /* fallback color */
             background-image: linear-gradient(to bottom, #36384e, #252637);
             border-radius: 14px;

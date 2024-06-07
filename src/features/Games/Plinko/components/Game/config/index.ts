@@ -3,11 +3,11 @@ import { colors } from '../../../../../../styles/colors';
 const pins = {
     startPins: 3,
     pinSize: 5.7, // Updated pin size
-    pinGap: 40, // Updated pin gap
+    pinGap: 39, // Updated pin gap
 };
 
 const ball = {
-    ballSize: 10, // Updated ball size
+    ballSize: 8, // Updated ball size
 };
 
 const engine = {

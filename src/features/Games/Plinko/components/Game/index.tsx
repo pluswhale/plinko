@@ -181,8 +181,8 @@ export function Game() {
     const multipliersBodies: Body[] = [];
 
     // Calculate the initial X position for the first multiplier
-    const multiplierGap = worldWidth / multipliers.length;
-    let lastMultiplierX = multiplierGap / 2;
+    const multiplierGap = worldWidth / multipliers.length - 3.5;
+    let lastMultiplierX = multiplierGap / 2 + 15;
 
     multipliers.forEach((multiplier) => {
         const blockWidth = 40;

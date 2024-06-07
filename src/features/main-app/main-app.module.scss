@@ -28,6 +28,11 @@
             z-index: 2;
         }
 
+        .heading_text {
+            font-size: 60px;
+            transform: translateY(-10px);
+        }
+
         @media screen and (max-width: 600px) {
             padding-top: 10px;
             padding-bottom: unset;

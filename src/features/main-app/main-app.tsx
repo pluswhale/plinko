@@ -15,7 +15,9 @@ const MainApp: FC = (): ReactElement => {
                 <div className={styles.logo_and_heading}>
                     <Logo />
                     <div className={styles.heading_wrapper}>
-                        <Heading level="h1">Plinko</Heading>
+                        <Heading className={styles.heading_text} level="h1">
+                            PlinkO
+                        </Heading>
                     </div>
                 </div>
                 <PlinkoGamePage />
