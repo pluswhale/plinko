@@ -1,5 +1,5 @@
 import ballAudio from '../../../../../assets/sounds/ball.wav';
-import { Bodies, Body, Composite, Engine, Events, IEventCollision, Render, Runner, World } from 'matter-js';
+import { Bodies, Body, Composite, Engine, Events, IEventCollision, Render, Runner, World, Vector } from 'matter-js';
 import { useCallback, useEffect, useState } from 'react';
 import { LinesType, MultiplierValues } from './@types';
 import { PlinkoGameBody } from './components/GameBody';
@@ -90,7 +90,7 @@ export function Game() {
     }
 
     function addInGameBall() {
-        if (inGameBallsCount > 15) return;
+        if (inGameBallsCount > 7) return;
         incrementInGameBallsCount();
     }
 
@@ -103,7 +103,7 @@ export function Game() {
     }
 
     async function handleRunBet() {
-        if (inGameBallsCount >= 15) return;
+        if (inGameBallsCount >= 7) return;
         bet(points);
         if (points <= 0) return;
         decrementCurrentBalance(points);
@@ -188,7 +188,7 @@ export function Game() {
         const blockWidth = 40;
         const blockHeight = 40;
         const multiplierBody = Bodies.rectangle(lastMultiplierX, worldHeight - 70, blockWidth, blockHeight, {
-            label: multiplier.label,
+            label: `multiplier-${multiplier.label}`,
             isStatic: true,
             render: {
                 fillStyle: 'red',
@@ -209,17 +209,16 @@ export function Game() {
     let totalBets = 0;
     let totalWinnings = 0;
 
-    function getCurrentRTP() {
-        if (totalBets === 0) return 1; // To avoid division by zero
-        return totalWinnings / totalBets;
-    }
+    // function getCurrentRTP() {
+    //     if (totalBets === 0) return 1; // To avoid division by zero
+    //     return totalWinnings / totalBets;
+    // }
 
     async function onCollideWithMultiplier(ball: Body, multiplier: Body) {
         ball.collisionFilter.group = 2;
-        World.remove(engine.world, ball);
-        removeInGameBall();
-        const ballValue = ball.label.split('-')[1];
-        const multiplierValue = +multiplier.label.split('-')[1] as MultiplierValues;
+
+        const ballValue = ball.label?.split('-')?.[1];
+        const multiplierValue = +multiplier?.label?.split('-')?.[2] as MultiplierValues;
 
         const multiplierSong = new Audio(getMultiplierSound(multiplierValue));
         multiplierSong.currentTime = 0;
@@ -234,23 +233,32 @@ export function Game() {
         totalBets += +ballValue;
         totalWinnings += newBalance;
 
-        const currentRTP = getCurrentRTP();
-        const desiredRTP = 0.98; // 98%
+        incrementCurrentBalance(newBalance);
 
-        if (currentRTP > desiredRTP && Math.random() > 0.5) {
-            // If RTP is too high, sometimes steer balls to lower multipliers
-            steerBallsToLowerMultipliers();
-        } else {
-            incrementCurrentBalance(newBalance);
+        // Remove the ball from the world after collision with a multiplier
+        Composite.remove(engine.world, ball);
+        removeInGameBall();
+    }
+
+    // Define the function to steer the ball towards the center
+    function steerBall(ball: Body) {
+        const centerPosition = { x: worldWidth / 2, y: ball.position.y };
+        const distanceFromCenter = Math.abs(ball.position.x - centerPosition.x);
+
+        // Only steer if the ball is far enough from the center
+        if (distanceFromCenter > pinsConfig.pinGap / 2) {
+            // Adjusted condition for clearer steering
+
+            // Adjust the force direction to steer the ball towards the center
+            const direction = Vector.sub(centerPosition, ball.position); // Change direction to steer towards the center
+            const magnitude = 0.01; // Increase magnitude to steer more clearly towards the center
+            const force = Vector.mult(Vector.normalise(direction), magnitude);
+            Body.applyForce(ball, ball.position, force);
         }
     }
 
-    function steerBallsToLowerMultipliers() {
-        // Logic to steer balls to lower multipliers
-        // This can be done by adjusting the ball's velocity or position based on the current multipliers layout
-    }
-
-    async function onCollideWithPin(pin: Body) {
+    // Adjust the existing collision handling function to use the new steerBall function
+    async function onCollideWithPin(pin: Body, ball: Body) {
         const originalFillStyle = '#4D506A';
         const originalStrokeStyle = 'none';
         const originalLineWidth = 0;
@@ -258,10 +266,6 @@ export function Game() {
         pin.render.fillStyle = 'white';
         pin.render.strokeStyle = 'white'; // Initial stroke color
         pin.render.lineWidth = 3; // Stroke width
-
-        // const hitSound = new Audio(ballAudio);
-        // hitSound.volume = 0.5;
-        // hitSound.play();
 
         const animationDuration = 1000;
         const startTime = performance.now();
@@ -288,6 +292,8 @@ export function Game() {
         }
 
         requestAnimationFrame(animate);
+
+        steerBall(ball); // Call the new steerBall function to steer the ball towards the center
     }
 
     async function onBodyCollision(event: IEventCollision<Engine>) {
@@ -295,12 +301,16 @@ export function Game() {
         for (const pair of pairs) {
             const { bodyA, bodyB } = pair;
 
-            if (bodyA.label.includes('pin')) {
-                await onCollideWithPin(bodyA);
+            if (bodyA.label.includes('pin') && bodyB.label.includes('ball')) {
+                await onCollideWithPin(bodyA, bodyB);
+            } else if (bodyB.label.includes('pin') && bodyA.label.includes('ball')) {
+                await onCollideWithPin(bodyB, bodyA);
             }
 
-            if (bodyB.label.includes('ball') && bodyA.label.includes('block')) {
+            if (bodyB.label.includes('ball') && bodyA.label.includes('multiplier')) {
                 await onCollideWithMultiplier(bodyB, bodyA);
+            } else if (bodyA.label.includes('ball') && bodyB.label.includes('multiplier')) {
+                await onCollideWithMultiplier(bodyA, bodyB);
             }
         }
     }
