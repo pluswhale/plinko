@@ -143,26 +143,26 @@ export function Game() {
     );
 
     const leftWall = Bodies.rectangle(
-        pinsConfig.pinGap / 2 - 45, // x-coordinate
+        pinsConfig.pinGap / 2 - 18, // x-coordinate
         worldHeight / 2,
         20, // Reduced width to 20 (you can adjust this value as needed)
         worldHeight,
         {
             render: {
-                visible: true,
+                visible: false,
             },
             isStatic: true,
         },
     );
 
     const rightWall = Bodies.rectangle(
-        worldWidth - pinsConfig.pinGap / 2 + 45, // x-coordinate
+        worldWidth - pinsConfig.pinGap / 2 + 18, // x-coordinate
         worldHeight / 2,
         20, // Reduced width to 20 (you can adjust this value as needed)
         worldHeight,
         {
             render: {
-                visible: true,
+                visible: false,
             },
             isStatic: true,
         },
