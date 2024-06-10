@@ -206,6 +206,14 @@ export function Game() {
 
     Composite.add(engine.world, [...pins, ...multipliersBodies, leftWall, rightWall, floor]);
 
+    let totalBets = 0;
+    let totalWinnings = 0;
+
+    function getCurrentRTP() {
+        if (totalBets === 0) return 1; // To avoid division by zero
+        return totalWinnings / totalBets;
+    }
+
     async function onCollideWithMultiplier(ball: Body, multiplier: Body) {
         ball.collisionFilter.group = 2;
         World.remove(engine.world, ball);
@@ -223,7 +231,23 @@ export function Game() {
         const newBalance = parseFloat((+ballValue * multiplierValue).toFixed(2)); // Ensure that newBalance is a number with two decimal places
         console.log('newBalance', newBalance);
 
-        incrementCurrentBalance(newBalance);
+        totalBets += +ballValue;
+        totalWinnings += newBalance;
+
+        const currentRTP = getCurrentRTP();
+        const desiredRTP = 0.98; // 98%
+
+        if (currentRTP > desiredRTP && Math.random() > 0.5) {
+            // If RTP is too high, sometimes steer balls to lower multipliers
+            steerBallsToLowerMultipliers();
+        } else {
+            incrementCurrentBalance(newBalance);
+        }
+    }
+
+    function steerBallsToLowerMultipliers() {
+        // Logic to steer balls to lower multipliers
+        // This can be done by adjusting the ball's velocity or position based on the current multipliers layout
     }
 
     async function onCollideWithPin(pin: Body) {
@@ -300,8 +324,6 @@ export function Game() {
 
         changePoints(value);
     };
-
-    console.log('{points <= 0 || points > userData?.points', points > userData?.points);
 
     return (
         <div className="flex h-fit flex-col items-center justify-center md:flex-row">

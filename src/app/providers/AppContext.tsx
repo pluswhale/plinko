@@ -1,6 +1,12 @@
 import React, { createContext, ReactElement, useContext, useEffect, useState } from 'react';
 import LoaderScreen from '../../features/loader-screen/LoaderScreen';
-import { loginUser, topUpBalance, updateBalance, withdrawBalance } from '../../shared/api/user/thunks';
+import {
+    decrementBalance,
+    incrementBalance,
+    loginUser,
+    topUpBalance,
+    withdrawBalance,
+} from '../../shared/api/user/thunks';
 import { useMediaQuery } from 'react-responsive';
 import { removeAllCookies } from '../../shared/libs/cookies';
 import { Flip, toast } from 'react-toastify';
@@ -114,17 +120,24 @@ export const AppContextProvider: React.FC<{ children: ReactElement | ReactElemen
     }
 
     function decrementCurrentBalance(amount: number) {
-        setUserData((prev: UserData) => {
-            return {
-                ...prev,
-                points: +parseFloat(String(prev?.points)).toFixed(2) - +parseFloat(String(amount)).toFixed(2),
-            };
-        });
+        if (userData?.userId) {
+            decrementBalance(userData?.userId, { points: amount }).then((res) => {
+                if (res === 'succession update the points') {
+                    setUserData((prev: UserData) => {
+                        return {
+                            ...prev,
+                            points:
+                                +parseFloat(String(prev?.points)).toFixed(2) - +parseFloat(String(amount)).toFixed(2),
+                        };
+                    });
+                }
+            });
+        }
     }
 
     function incrementCurrentBalance(amount: number) {
         if (userData?.userId) {
-            updateBalance(userData?.userId, { points: amount }).then((res) => {
+            incrementBalance(userData?.userId, { points: amount }).then((res) => {
                 if (res === 'succession update the points') {
                     setUserData((prev: UserData) => {
                         return {

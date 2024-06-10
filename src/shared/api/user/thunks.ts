@@ -23,9 +23,18 @@ export const fetchUserById = async (userId: string) => {
     }
 };
 
-export const updateBalance = async (userId: string, body: UpdateBalance) => {
+export const incrementBalance = async (userId: string, body: UpdateBalance) => {
     try {
-        const res = await userApi.updateBalance(userId, body);
+        const res = await userApi.incrementBalance(userId, body);
+        return res.data;
+    } catch (err) {
+        console.error(err);
+    }
+};
+
+export const decrementBalance = async (userId: string, body: UpdateBalance) => {
+    try {
+        const res = await userApi.decrementBalance(userId, body);
         return res.data;
     } catch (err) {
         console.error(err);
