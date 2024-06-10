@@ -1,16 +1,17 @@
 import React, { createContext, ReactElement, useContext, useEffect, useState } from 'react';
 import LoaderScreen from '../../features/loader-screen/LoaderScreen';
-import { loginUser } from '../../shared/api/user/thunks';
+import { loginUser, topUpBalance, updateBalance, withdrawBalance } from '../../shared/api/user/thunks';
 import { useMediaQuery } from 'react-responsive';
 import { removeAllCookies } from '../../shared/libs/cookies';
-import { parseUriParamsLine } from '../../shared/utils/parseUriParams';
+import { Flip, toast } from 'react-toastify';
 
 //@ts-ignore
 const tg: any = window?.Telegram?.WebApp;
 
 export interface UserData {
     createdAt: string;
-    unclaimedTokens: number;
+    points: number;
+    unclaimedWhisks: number;
     updatedAt: string;
     userId: string;
     __v: number;
@@ -28,11 +29,13 @@ export interface TelegramUserData {
 }
 
 interface AppContextType {
-    userData: UserData | null;
+    userData: UserData;
     isMobile: boolean;
     tgUser: TelegramUserData | null;
     decrementCurrentBalance: (amount: number) => void;
     incrementCurrentBalance: (amount: number) => void;
+    topUpCurrentBalance: (amount: number) => void;
+    withdrawCurrentBalance: (amount: number) => void;
 }
 
 // Create the context
@@ -41,7 +44,8 @@ const AppContext = createContext<AppContextType | undefined>(undefined);
 const FAKE_USER = {
     _id: '664df59323d74ce23ab961f5',
     userId: '574813379',
-    unclaimedTokens: 1000,
+    points: 1000,
+    unclaimedWhisks: 1000,
     createdAt: '2024-05-21T11:33:49.389+00:00',
     updatedAt: '2024-05-22T10:17:34.733+00:00',
     __v: 5,
@@ -59,10 +63,9 @@ export const useAppContext = () => {
 export const AppContextProvider: React.FC<{ children: ReactElement | ReactElement[] }> = ({ children }) => {
     const isMobile = useMediaQuery({ query: '(max-width: 600px)' });
     const [tgUser, setTgUser] = useState<TelegramUserData | null>(null);
-    const [userData, setUserData] = useState<UserData | null>(FAKE_USER);
+    const [userData, setUserData] = useState<UserData>(FAKE_USER);
     const [loading, setIsLoading] = useState<boolean>(true);
     const [isAppLoaded, setIsAppLoaded] = useState<boolean>(false);
-    const uriParams = parseUriParamsLine(window.location.href?.split('?')?.[1]);
 
     useEffect(() => {
         return () => {
@@ -88,7 +91,7 @@ export const AppContextProvider: React.FC<{ children: ReactElement | ReactElemen
             try {
                 const res = await loginUser(tgUser?.id?.toString() || '90849048490'); //574813379
                 if (res) {
-                    setUserData(res.user || FAKE_USER);
+                    setUserData(res);
                 }
             } catch (error) {
                 setUserData(FAKE_USER);
@@ -97,7 +100,7 @@ export const AppContextProvider: React.FC<{ children: ReactElement | ReactElemen
         };
 
         fetchUserData();
-    }, [tgUser?.id, uriParams?.startapp]);
+    }, [tgUser?.id]);
 
     useEffect(() => {
         setTimeout(() => {
@@ -111,21 +114,106 @@ export const AppContextProvider: React.FC<{ children: ReactElement | ReactElemen
     }
 
     function decrementCurrentBalance(amount: number) {
-        setUserData((prev: any) => {
+        setUserData((prev: UserData) => {
             return {
                 ...prev,
-                unclaimedTokens: +parseFloat(prev?.unclaimedTokens).toFixed(2) - +parseFloat(String(amount)).toFixed(2),
+                points: +parseFloat(String(prev?.points)).toFixed(2) - +parseFloat(String(amount)).toFixed(2),
             };
         });
     }
 
     function incrementCurrentBalance(amount: number) {
-        setUserData((prev: any) => {
-            return {
-                ...prev,
-                unclaimedTokens: +parseFloat(prev?.unclaimedTokens).toFixed(2) + +parseFloat(String(amount)).toFixed(2),
-            };
-        });
+        if (userData?.userId) {
+            updateBalance(userData?.userId, { points: amount }).then((res) => {
+                if (res === 'succession update the points') {
+                    setUserData((prev: UserData) => {
+                        return {
+                            ...prev,
+                            points:
+                                +parseFloat(String(prev?.points)).toFixed(2) + +parseFloat(String(amount)).toFixed(2),
+                        };
+                    });
+                }
+            });
+        }
+    }
+
+    function topUpCurrentBalance(amount: number) {
+        if (userData?.userId) {
+            topUpBalance(userData?.userId, { amount }).then((res) => {
+                if (res === 'succession update the points') {
+                    setUserData((prev: UserData) => {
+                        return {
+                            ...prev,
+                            points:
+                                +parseFloat(String(prev?.points)).toFixed(2) + +parseFloat(String(amount)).toFixed(2),
+                        };
+                    });
+                    toast.success(`You top up ${amount} whisks`, {
+                        position: 'bottom-left',
+                        autoClose: 3000,
+                        hideProgressBar: false,
+                        closeOnClick: true,
+                        pauseOnHover: true,
+                        draggable: true,
+                        progress: undefined,
+                        theme: 'dark',
+                        transition: Flip,
+                    });
+                } else {
+                    toast.error(`You didn't top up whisks. Try again!`, {
+                        position: 'bottom-left',
+                        autoClose: 3000,
+                        hideProgressBar: false,
+                        closeOnClick: true,
+                        pauseOnHover: true,
+                        draggable: true,
+                        progress: undefined,
+                        theme: 'dark',
+                        transition: Flip,
+                    });
+                }
+            });
+        }
+    }
+
+    function withdrawCurrentBalance(amount: number) {
+        if (userData?.userId) {
+            withdrawBalance(userData?.userId, { amount }).then((res) => {
+                if (res === 'succession update the points') {
+                    setUserData((prev: UserData) => {
+                        return {
+                            ...prev,
+                            points:
+                                +parseFloat(String(prev?.points)).toFixed(2) - +parseFloat(String(amount)).toFixed(2),
+                        };
+                    });
+                    toast.success(`You withdraw ${amount} whisks`, {
+                        position: 'bottom-left',
+                        autoClose: 3000,
+                        hideProgressBar: false,
+                        closeOnClick: true,
+                        pauseOnHover: true,
+                        draggable: true,
+                        progress: undefined,
+                        theme: 'dark',
+                        transition: Flip,
+                    });
+                } else {
+                    toast.error(`You didn't withdraw whisks. Try again!`, {
+                        position: 'bottom-left',
+                        autoClose: 3000,
+                        hideProgressBar: false,
+                        closeOnClick: true,
+                        pauseOnHover: true,
+                        draggable: true,
+                        progress: undefined,
+                        theme: 'dark',
+                        transition: Flip,
+                    });
+                }
+            });
+        }
     }
 
     function onExitFromApp() {
@@ -141,6 +229,8 @@ export const AppContextProvider: React.FC<{ children: ReactElement | ReactElemen
                 isMobile,
                 decrementCurrentBalance,
                 incrementCurrentBalance,
+                topUpCurrentBalance,
+                withdrawCurrentBalance,
             }}
         >
             {children}

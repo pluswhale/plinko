@@ -294,12 +294,14 @@ export function Game() {
             return; // Exit the function if the input is not a number
         }
 
-        if (userData?.unclaimedTokens && +value > userData?.unclaimedTokens) {
-            changePoints(String(userData?.unclaimedTokens));
+        if (userData?.points && +value > userData?.points) {
+            changePoints(String(userData?.points));
         }
 
         changePoints(value);
     };
+
+    console.log('{points <= 0 || points > userData?.points', points > userData?.points);
 
     return (
         <div className="flex h-fit flex-col items-center justify-center md:flex-row">
@@ -314,9 +316,12 @@ export function Game() {
                     </FormProvider>
                 </div>
                 <Button
-                    isDisabled={points <= 0}
+                    isDisabled={points <= 0 || points > userData?.points}
                     stylesForTexts={{ main: { fontSize: '32px' }, sub: {} }}
                     fontSize="60px"
+                    backgroundImage={
+                        points <= 0 || points > userData?.points ? 'linear-gradient(#C0C0C0, #808080)' : undefined
+                    }
                     fontFamily="Montserrat, sans-serif"
                     width="40%"
                     onClick={handleRunBet}

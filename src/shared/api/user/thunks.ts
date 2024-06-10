@@ -1,4 +1,4 @@
-import { UpdateBalance, userApi } from './user';
+import { UpdateBalance, userApi, WithdrawOrTopupBalance } from './user';
 
 export const loginUser = async (userId: string) => {
     try {
@@ -26,6 +26,24 @@ export const fetchUserById = async (userId: string) => {
 export const updateBalance = async (userId: string, body: UpdateBalance) => {
     try {
         const res = await userApi.updateBalance(userId, body);
+        return res.data;
+    } catch (err) {
+        console.error(err);
+    }
+};
+
+export const topUpBalance = async (userId: string, body: WithdrawOrTopupBalance) => {
+    try {
+        const res = await userApi.topUpBalance(userId, body);
+        return res.data;
+    } catch (err) {
+        console.error(err);
+    }
+};
+
+export const withdrawBalance = async (userId: string, body: WithdrawOrTopupBalance) => {
+    try {
+        const res = await userApi.withdrawBalance(userId, body);
         return res.data;
     } catch (err) {
         console.error(err);

@@ -23,7 +23,7 @@ const PaymentTemplate: FC = (): ReactElement => {
                 <div className={styles.app__payment}>
                     <TonConnectModal />
                 </div>
-                <Footer isMobile={isMobile} unclaimedTokens={userData?.unclaimedTokens} />
+                <Footer isMobile={isMobile} unclaimedTokens={userData?.points} />
             </div>
         </div>
     );

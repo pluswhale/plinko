@@ -21,7 +21,7 @@ const MainApp: FC = (): ReactElement => {
                     </div>
                 </div>
                 <PlinkoGamePage />
-                <Footer isMobile={isMobile} unclaimedTokens={userData?.unclaimedTokens} />
+                <Footer isMobile={isMobile} unclaimedTokens={userData?.points} />
             </div>
         </div>
     );

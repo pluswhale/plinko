@@ -14,6 +14,16 @@ function shortAddress(address: string): string {
 export const Disconnect: FC = () => {
     const { userFriendlyAddress } = useTonConnect();
 
+    const onDisconnectWallet = () => {
+        for (const key in localStorage) {
+            if (key.startsWith('ton-connect')) {
+                localStorage.removeItem(key);
+            }
+        }
+
+        window.location.href = '/';
+    };
+
     return (
         <div className={styles.disconnect}>
             <Typography fontSize="20px" className={styles.disconnect__title}>
@@ -21,6 +31,7 @@ export const Disconnect: FC = () => {
             </Typography>
 
             <Button
+                onClick={onDisconnectWallet}
                 fontFamily={'Montserrat, sans-serif'}
                 height={'32px'}
                 backgroundImage="linear-gradient(to bottom, #DB0038, #BB002F)"

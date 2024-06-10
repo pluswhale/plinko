@@ -1,8 +1,13 @@
-import { FC } from 'react';
+import { FC, ReactElement } from 'react';
 import { Typography } from '../../../../shared/components/typography';
 import styles from './in-game-balance.module.scss';
+import { formatNumber } from '../../../../shared/libs/functions/formatFloatNumber';
 
-export const InGameBalance: FC = () => {
+type Props = {
+    balance: number;
+};
+
+export const InGameBalance: FC<Props> = ({ balance }): ReactElement => {
     return (
         <div className={styles.in_game_balance}>
             <div className={styles.in_game_balance__container}>
@@ -11,7 +16,7 @@ export const InGameBalance: FC = () => {
                 </Typography>
                 <div className={styles.in_game_balance__item}>
                     <Typography fontSize="24px" className={styles.in_game_balance__item_amount}>
-                        18255
+                        {formatNumber(String(balance))}
                     </Typography>
                     <Typography fontSize="24px" className={styles.in_game_balance__item_currency}>
                         WHISKS

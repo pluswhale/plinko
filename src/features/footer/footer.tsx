@@ -4,25 +4,11 @@ import { Typography } from '../../shared/components/typography';
 
 import styles from './footer.module.scss';
 import { useLocation, useNavigate } from 'react-router-dom';
+import { formatNumber } from '../../shared/libs/functions/formatFloatNumber';
 
 interface Props {
     unclaimedTokens: number | undefined;
     isMobile: boolean;
-}
-
-function formatNumber(value: string | undefined) {
-    if (!value) return '0';
-
-    const number = parseFloat(value);
-    const roundedValue = number.toFixed(2); // Round to 2 decimal places
-
-    const [integerPart, decimalPart] = roundedValue.split('.');
-
-    if (!decimalPart || parseInt(decimalPart) === 0) {
-        return integerPart;
-    }
-
-    return parseFloat(roundedValue).toString();
 }
 
 export const Footer: FC<Props> = ({ unclaimedTokens, isMobile }): ReactElement => {

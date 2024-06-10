@@ -58,7 +58,7 @@ export const Button: FC<Props> = (props): ReactElement => {
     return (
         <button
             onClick={onClick || undefined}
-            disabled={!!isDisabled}
+            disabled={isDisabled}
             style={{
                 fontSize,
                 height,
