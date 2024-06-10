@@ -26,7 +26,7 @@ export default defineConfig({
     },
     server: {
         host: localIp, // Use your local IP address
-        port: 3000, // Any port you prefer
+        port: 5167, // Any port you prefer
     },
 });
 

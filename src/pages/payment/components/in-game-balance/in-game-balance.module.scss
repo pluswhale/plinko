@@ -1,0 +1,34 @@
+.in_game_balance {
+    width: 100%;
+
+    margin-top: 15px;
+    background-color: #202133;
+    border-top: 1px solid #646572d9;
+    border-bottom: 1px solid #646572d9;
+
+    &__container {
+        width: 100%;
+        padding: 15px 40px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 20px;
+    }
+
+    &__item {
+        display: flex;
+        gap: 12px;
+
+        &_name {
+            font-weight: 700;
+        }
+
+        &_amount {
+            display: flex;
+            align-items: center;
+            justify-content: start;
+            font-weight: 700;
+        }
+    }
+}
+

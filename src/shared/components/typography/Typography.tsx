@@ -6,6 +6,7 @@ interface TypographyProps {
     variant?: 'body1' | 'body2' | 'caption' | 'button' | 'overline';
     align?: 'inherit' | 'left' | 'center' | 'right' | 'justify';
     color?: string;
+    lineHeight?: string;
     className?: string;
     fontFamily?: string;
     fontSize?: string;
@@ -17,6 +18,7 @@ export const Typography: React.FC<TypographyProps> = ({
     align = 'inherit',
     color = 'default',
     className = '',
+    lineHeight,
     children,
     fontFamily = "'Montserrat', sans-serif",
     fontSize = '16px',
@@ -29,7 +31,7 @@ export const Typography: React.FC<TypographyProps> = ({
         color: color !== 'default' ? color : undefined,
         fontFamily: fontFamily,
         fontSize,
-        lineHeight: fontSize,
+        lineHeight: lineHeight || fontSize,
     };
 
     return (

@@ -1,0 +1,27 @@
+.deposit_or_withdraw {
+    width: 100%;
+    padding: 0 40px;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    padding-top: 15px;
+    align-items: center;
+
+    &__title {
+        font-weight: 700;
+    }
+
+    &__input_wrapper {
+        background-color: #202133;
+        border: 1px solid white;
+        border-radius: 8px;
+        justify-content: center;
+        display: flex;
+    }
+
+    &__action_buttons {
+        display: flex;
+        gap: 10px;
+    }
+}
+

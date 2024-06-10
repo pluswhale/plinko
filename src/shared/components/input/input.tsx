@@ -23,6 +23,8 @@ export const Input: FC<InputProps> = ({
         formState: { errors },
     } = useFormContext();
 
+    console.log('cs', customStyles);
+
     const renderedInput = () => {
         return onChange ? (
             <input
@@ -50,7 +52,7 @@ export const Input: FC<InputProps> = ({
     };
 
     return (
-        <div style={{ width, height }} className={styles.wrapper}>
+        <div style={{ width, height }} className={`${className || {}}  ${styles.wrapper}`}>
             {label ? (
                 <label style={customStyles?.label || {}} className={styles.label} htmlFor={name}>
                     <span className={styles.label_text}>

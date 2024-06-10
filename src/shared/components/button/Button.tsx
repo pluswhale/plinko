@@ -8,6 +8,7 @@ type Props = {
     height?: string;
     fontFamily?: string;
     boxShadow?: string;
+    backgroundImage?: string;
     backgroundColor?: string;
     fontWeight?: string;
     imageLeft?: string;
@@ -30,6 +31,7 @@ export const Button: FC<Props> = (props): ReactElement => {
         fontWeight,
         boxShadow,
         imageLeft,
+        backgroundImage,
         imageRight,
         backgroundColor,
         width = '100%',
@@ -40,7 +42,7 @@ export const Button: FC<Props> = (props): ReactElement => {
         onClick,
     } = props;
 
-    const [shouldShake, setShouldShake] = useState(false);
+    const [shouldShake, setShouldShake] = useState<boolean>(false);
 
     useEffect(() => {
         const shakeInterval = setInterval(() => {
@@ -67,7 +69,11 @@ export const Button: FC<Props> = (props): ReactElement => {
                 textTransform,
                 borderRadius,
                 boxShadow,
-                backgroundImage: backgroundColor ? 'none' : 'linear-gradient(to bottom, #f2632e, #e93324)',
+                backgroundImage: backgroundColor
+                    ? 'none'
+                    : backgroundImage
+                      ? backgroundImage
+                      : 'linear-gradient(to bottom, #f2632e, #e93324)',
             }}
             className={styles.button}
         >

@@ -1,0 +1,30 @@
+.currencies_balance {
+    width: 100%;
+    padding: 0 40px;
+    display: flex;
+    gap: 20px;
+    padding-top: 15px;
+    &__item {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+        width: 50%;
+
+        &_name {
+            font-weight: 700;
+        }
+
+        &_amount {
+            display: flex;
+            align-items: center;
+            justify-content: start;
+            padding: 10px 20px;
+            border-radius: 12px;
+            width: 100%;
+            border: 1px solid #646572d9;
+            color: white;
+            font-family: 'Montserrat', sans-serif;
+        }
+    }
+}
+

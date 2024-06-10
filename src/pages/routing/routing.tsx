@@ -4,6 +4,7 @@ import React from 'react';
 import LoaderScreen from '../../features/loader-screen/LoaderScreen';
 
 const MainPage = React.lazy(() => import('../main/main'));
+const PaymentPage = React.lazy(() => import('../payment/payment'));
 
 export const Routing: FC = (): ReactElement => {
     return (
@@ -11,6 +12,7 @@ export const Routing: FC = (): ReactElement => {
             <BrowserRouter>
                 <Routes>
                     <Route path="whisky-plinko" element={<MainPage />} />
+                    <Route path="whisky-plinko/payment" element={<PaymentPage />} />
                     <Route path="*" element={<div>Not found</div>} />
                 </Routes>
             </BrowserRouter>
