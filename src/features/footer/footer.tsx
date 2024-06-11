@@ -17,9 +17,9 @@ export const Footer: FC<Props> = ({ unclaimedTokens, isMobile }): ReactElement =
 
     const onNavigateToSpecificPage = () => {
         if (location.pathname.includes('payment')) {
-            navigate('/whisky-plinko');
+            navigate('/');
         } else {
-            navigate('/whisky-plinko/payment');
+            navigate('/payment');
         }
     };
 
