@@ -56,7 +56,7 @@ export function Game() {
     const magnet = {
         x: worldWidth / 2, // X position of the magnet
         y: worldHeight - 10, // Y position of the magnet
-        strength: 0.000148, // Adjust the strength of the magnet
+        strength: 0.00016, // Adjust the strength of the magnet
         influenceRadius: 400, // Radius of the magnet's influence
     };
     // #endregion
