@@ -31,6 +31,15 @@ export function Game() {
     //     count: 0,
     // });
     const [scoreHistory, setScoreHistory] = useState<ScoreHistory[]>([]);
+    const [imageLoaded, setImageLoaded] = useState<boolean>(false);
+
+    useEffect(() => {
+        const img = new Image();
+        img.onload = () => {
+            setImageLoaded(true);
+        };
+        img.src = bigCharacter; // Start loading the image
+    }, []);
 
     const incrementInGameBallsCount = useGameStore((state) => state.incrementGamesRunning);
     const decrementInGameBallsCount = useGameStore((state) => state.decrementGamesRunning);
@@ -47,7 +56,7 @@ export function Game() {
     const magnet = {
         x: worldWidth / 2, // X position of the magnet
         y: worldHeight - 10, // Y position of the magnet
-        strength: 0.00012, // Adjust the strength of the magnet
+        strength: 0.000148, // Adjust the strength of the magnet
         influenceRadius: 400, // Radius of the magnet's influence
     };
     // #endregion
@@ -410,7 +419,7 @@ export function Game() {
         <div className="flex h-fit flex-col items-center justify-center md:flex-row">
             <div className="flex flex-1 items-center justify-center relative">
                 <PlinkoGameBody />
-                <img className={styles.game__big_character} src={bigCharacter} />
+                {imageLoaded && <img className={styles.game__big_character} src={bigCharacter} />}
                 <ScoreHistory scoreHistory={scoreHistory} />
             </div>
             <div className={styles.game__score}>
