@@ -1,0 +1,19 @@
+.score_history {
+    position: absolute;
+    top: -147px;
+    right: 10px;
+
+    &__score {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 50px;
+        height: 25px;
+        border-radius: 4px;
+
+        &_text {
+            font-weight: 700;
+        }
+    }
+}
+

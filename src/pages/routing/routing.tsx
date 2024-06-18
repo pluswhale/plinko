@@ -9,10 +9,10 @@ const PaymentPage = React.lazy(() => import('../payment/payment'));
 export const Routing: FC = (): ReactElement => {
     return (
         <Suspense fallback={<LoaderScreen />}>
-            <BrowserRouter basename="/whisky-plinko">
+            <BrowserRouter>
                 <Routes>
-                    <Route path="/" element={<MainPage />} />
-                    <Route path="payment" element={<PaymentPage />} />
+                    <Route path="/whiskers-plinko" element={<MainPage />} />
+                    <Route path="/whiskers-plinko/payment" element={<PaymentPage />} />
                     <Route path="*" element={<div>Not found</div>} />
                 </Routes>
             </BrowserRouter>

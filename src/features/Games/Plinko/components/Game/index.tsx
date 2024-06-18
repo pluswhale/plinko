@@ -1,6 +1,6 @@
 import ballAudio from '../../../../../assets/sounds/ball.wav';
 import { Bodies, Body, Composite, Engine, Events, IEventCollision, Render, Runner, World } from 'matter-js';
-import { useCallback, useEffect, useState } from 'react';
+import { createRef, useCallback, useEffect, useState } from 'react';
 import { LinesType, MultiplierValues } from './@types';
 import { PlinkoGameBody } from './components/GameBody';
 import { config } from './config';
@@ -10,9 +10,11 @@ import { random } from '../../../../../shared/utils/random';
 import { Button } from '../../../../../shared/components/button';
 import styles from './index.module.scss';
 import cat from '../../../../../assets/images/kit.png';
+import bigCharacter from '../../../../../assets/images/big_character.png';
 import { Input } from '../../../../../shared/components/input/input';
 import { FormProvider, useForm } from 'react-hook-form';
 import { useAppContext } from '../../../../../app/providers/AppContext';
+import { ScoreHistory } from '../score-history/score-history';
 
 export function Game() {
     // #region States
@@ -20,14 +22,15 @@ export function Game() {
     const [lines] = useState<LinesType>(8);
     const inGameBallsCount = useGameStore((state) => state.gamesRunning);
     const { userData, decrementCurrentBalance, incrementCurrentBalance } = useAppContext();
-    const [res, setRes] = useState<any>({
-        30: 0,
-        4: 0,
-        1.5: 0,
-        0.3: 0,
-        0.2: 0,
-        count: 0,
-    });
+    // const [res, setRes] = useState<any>({
+    //     30: 0,
+    //     4: 0,
+    //     1.5: 0,
+    //     0.3: 0,
+    //     0.2: 0,
+    //     count: 0,
+    // });
+    const [scoreHistory, setScoreHistory] = useState<ScoreHistory[]>([]);
 
     const incrementInGameBallsCount = useGameStore((state) => state.incrementGamesRunning);
     const decrementInGameBallsCount = useGameStore((state) => state.decrementGamesRunning);
@@ -254,13 +257,13 @@ export function Game() {
 
     Composite.add(engine.world, [...pins, ...multipliersBodies, magnetBody, leftWall, rightWall, floor]);
 
-    let totalBets = 0;
-    let totalWinnings = 0;
+    // let totalBets = 0;
+    // let totalWinnings = 0;
 
-    function getCurrentRTP() {
-        if (totalBets === 0) return 1; // To avoid division by zero
-        return totalWinnings / totalBets;
-    }
+    // function getCurrentRTP() {
+    //     if (totalBets === 0) return 1; // To avoid division by zero
+    //     return totalWinnings / totalBets;
+    // }
 
     async function onCollideWithMultiplier(ball: Body, multiplier: Body) {
         ball.collisionFilter.group = 2;
@@ -269,11 +272,9 @@ export function Game() {
         const ballValue = ball.label.split('-')[1];
         const multiplierValue = +multiplier.label.split('-')[1] as MultiplierValues;
 
-        console.log('multiplierValue', multiplierValue);
-
-        setRes((prev: any) => {
-            return { ...prev, [multiplierValue]: prev[multiplierValue] + 1, count: prev.count + 1 };
-        });
+        // setRes((prev: any) => {
+        //     return { ...prev, [multiplierValue]: prev[multiplierValue] + 1, count: prev.count + 1 };
+        // });
 
         const multiplierSong = new Audio(getMultiplierSound(multiplierValue));
         multiplierSong.currentTime = 0;
@@ -296,14 +297,8 @@ export function Game() {
         //     steerBallsToLowerMultipliers();
         // } else {
         incrementCurrentBalance(newBalance);
+        updateScoreHistory({ id: 0, label: 'x' + multiplierValue, disappears: false, nodeRef: createRef() });
         // }
-    }
-
-    console.log('res', res);
-
-    function steerBallsToLowerMultipliers() {
-        // Logic to steer balls to lower multipliers
-        // This can be done by adjusting the ball's velocity or position based on the current multipliers layout
     }
 
     async function onCollideWithPin(pin: Body) {
@@ -312,8 +307,8 @@ export function Game() {
         const originalLineWidth = 0;
 
         pin.render.fillStyle = 'white';
-        pin.render.strokeStyle = 'white'; // Initial stroke color
-        pin.render.lineWidth = 3; // Stroke width
+        pin.render.strokeStyle = 'white';
+        pin.render.lineWidth = 3;
 
         // const hitSound = new Audio(ballAudio);
         // hitSound.volume = 0.5;
@@ -328,8 +323,7 @@ export function Game() {
 
             pin.render.fillStyle = `rgba(255, 255, 255, ${1 - progress})`;
 
-            // Calculate the stroke color transition
-            const r = Math.round(255 * (1 - progress) + 77 * progress); // Assuming original stroke color is rgb(77, 80, 106)
+            const r = Math.round(255 * (1 - progress) + 77 * progress);
             const g = Math.round(255 * (1 - progress) + 80 * progress);
             const b = Math.round(255 * (1 - progress) + 106 * progress);
             pin.render.strokeStyle = `rgba(${r}, ${g}, ${b}, 1)`;
@@ -381,14 +375,43 @@ export function Game() {
         changePoints(value);
     };
 
-    setInterval(() => {
-        // handleRunBet();
-    }, 1_500);
+    const updateScoreHistory = (score: ScoreHistory) => {
+        setScoreHistory((prevData) => {
+            const newScore = {
+                ...score,
+                id: prevData.length > 0 ? prevData[0].id + 1 : 1,
+            };
+
+            let updatedData = [newScore, ...prevData];
+
+            if (updatedData.length > 10) {
+                updatedData = updatedData.slice(0, 10);
+            }
+
+            return updatedData;
+        });
+    };
+
+    useEffect(() => {
+        const interval = setInterval(() => {
+            setScoreHistory((prevHistory) => {
+                if (prevHistory.length === 0) {
+                    clearInterval(interval);
+                    return prevHistory;
+                }
+                return prevHistory.slice(0, -2);
+            });
+        }, 1500);
+
+        return () => clearInterval(interval);
+    }, [scoreHistory]);
 
     return (
         <div className="flex h-fit flex-col items-center justify-center md:flex-row">
-            <div className="flex flex-1 items-center justify-center">
+            <div className="flex flex-1 items-center justify-center relative">
                 <PlinkoGameBody />
+                <img className={styles.game__big_character} src={bigCharacter} />
+                <ScoreHistory scoreHistory={scoreHistory} />
             </div>
             <div className={styles.game__score}>
                 <div className={styles.game__score_count}>

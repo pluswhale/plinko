@@ -1,4 +1,10 @@
 .game {
+    &__big_character {
+        position: absolute;
+        height: 332px;
+        left: -76px;
+        top: -153px;
+    }
     &__score {
         display: flex;
         width: 100%;
@@ -9,6 +15,7 @@
             // padding-bottom: 100px;
             transform: translateY(-110px);
         }
+
         &_img {
             height: auto;
             border: 1px solid white;
