@@ -10,8 +10,6 @@ export const Routing: FC = (): ReactElement => {
     return (
         <Suspense fallback={<LoaderScreen />}>
             <BrowserRouter basename="/whisky-plinko">
-                {' '}
-                {/* Add basename here */}
                 <Routes>
                     <Route path="/" element={<MainPage />} />
                     <Route path="payment" element={<PaymentPage />} />

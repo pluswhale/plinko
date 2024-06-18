@@ -20,6 +20,14 @@ export function Game() {
     const [lines] = useState<LinesType>(8);
     const inGameBallsCount = useGameStore((state) => state.gamesRunning);
     const { userData, decrementCurrentBalance, incrementCurrentBalance } = useAppContext();
+    const [res, setRes] = useState<any>({
+        30: 0,
+        4: 0,
+        1.5: 0,
+        0.3: 0,
+        0.2: 0,
+        count: 0,
+    });
 
     const incrementInGameBallsCount = useGameStore((state) => state.incrementGamesRunning);
     const decrementInGameBallsCount = useGameStore((state) => state.decrementGamesRunning);
@@ -32,6 +40,13 @@ export function Game() {
 
     const worldWidth = worldConfig.width;
     const worldHeight = worldConfig.height;
+
+    const magnet = {
+        x: worldWidth / 2, // X position of the magnet
+        y: worldHeight - 10, // Y position of the magnet
+        strength: 0.00012, // Adjust the strength of the magnet
+        influenceRadius: 400, // Radius of the magnet's influence
+    };
     // #endregion
 
     useEffect(() => {
@@ -62,6 +77,16 @@ export function Game() {
         Runner.run(runner, engine);
         Render.run(render);
 
+        // Adding afterUpdate event to apply magnetic force
+        Events.on(engine, 'afterUpdate', () => {
+            const bodies = Composite.allBodies(engine.world);
+            for (const body of bodies) {
+                if (body.label.includes('ball')) {
+                    applyMagneticForce(body, magnet);
+                }
+            }
+        });
+
         return () => {
             World.clear(engine.world, true);
             Engine.clear(engine);
@@ -69,6 +94,22 @@ export function Game() {
             render.textures = {};
         };
     }, [lines]);
+
+    function applyMagneticForce(ball: any, magnet: any) {
+        const dx = magnet.x - ball.position.x;
+        const dy = magnet.y - ball.position.y;
+        const distance = Math.sqrt(dx * dx + dy * dy);
+
+        if (distance < magnet.influenceRadius) {
+            const forceMagnitude = (magnet.strength * (magnet.influenceRadius - distance)) / magnet.influenceRadius;
+            const force = {
+                x: (dx / distance) * forceMagnitude,
+                y: (dy / distance) * forceMagnitude,
+            };
+
+            Body.applyForce(ball, ball.position, force);
+        }
+    }
 
     const pins: Body[] = [];
 
@@ -90,7 +131,7 @@ export function Game() {
     }
 
     function addInGameBall() {
-        if (inGameBallsCount > 15) return;
+        if (inGameBallsCount > 8) return;
         incrementInGameBallsCount();
     }
 
@@ -103,7 +144,7 @@ export function Game() {
     }
 
     async function handleRunBet() {
-        if (inGameBallsCount >= 15) return;
+        if (inGameBallsCount >= 8) return;
         bet(points);
         if (points <= 0) return;
         decrementCurrentBalance(points);
@@ -123,7 +164,7 @@ export function Game() {
 
             const ball = Bodies.circle(ballX, 20, ballConfig.ballSize, {
                 restitution: 1,
-                friction: 0.6,
+                friction: 0.85,
                 label: `ball-${ballValue}`,
                 id: new Date().getTime(),
                 frictionAir: 0.05,
@@ -203,8 +244,15 @@ export function Game() {
         lastMultiplierX += multiplierGap;
         multipliersBodies.push(multiplierBody);
     });
+    const magnetBody = Bodies.circle(magnet.x, magnet.y, 50, {
+        isStatic: true,
+        render: {
+            fillStyle: 'blue',
+            visible: false,
+        },
+    });
 
-    Composite.add(engine.world, [...pins, ...multipliersBodies, leftWall, rightWall, floor]);
+    Composite.add(engine.world, [...pins, ...multipliersBodies, magnetBody, leftWall, rightWall, floor]);
 
     let totalBets = 0;
     let totalWinnings = 0;
@@ -221,6 +269,12 @@ export function Game() {
         const ballValue = ball.label.split('-')[1];
         const multiplierValue = +multiplier.label.split('-')[1] as MultiplierValues;
 
+        console.log('multiplierValue', multiplierValue);
+
+        setRes((prev: any) => {
+            return { ...prev, [multiplierValue]: prev[multiplierValue] + 1, count: prev.count + 1 };
+        });
+
         const multiplierSong = new Audio(getMultiplierSound(multiplierValue));
         multiplierSong.currentTime = 0;
         multiplierSong.volume = 0.2;
@@ -231,19 +285,21 @@ export function Game() {
         const newBalance = parseFloat((+ballValue * multiplierValue).toFixed(2)); // Ensure that newBalance is a number with two decimal places
         console.log('newBalance', newBalance);
 
-        totalBets += +ballValue;
-        totalWinnings += newBalance;
+        // totalBets += +ballValue;
+        // totalWinnings += newBalance;
 
-        const currentRTP = getCurrentRTP();
-        const desiredRTP = 0.98; // 98%
+        // const currentRTP = getCurrentRTP();
+        // const desiredRTP = 0.98; // 98%
 
-        if (currentRTP > desiredRTP && Math.random() > 0.5) {
-            // If RTP is too high, sometimes steer balls to lower multipliers
-            steerBallsToLowerMultipliers();
-        } else {
-            incrementCurrentBalance(newBalance);
-        }
+        // if (currentRTP > desiredRTP && Math.random() > 0.5) {
+        //     // If RTP is too high, sometimes steer balls to lower multipliers
+        //     steerBallsToLowerMultipliers();
+        // } else {
+        incrementCurrentBalance(newBalance);
+        // }
     }
+
+    console.log('res', res);
 
     function steerBallsToLowerMultipliers() {
         // Logic to steer balls to lower multipliers
@@ -324,6 +380,10 @@ export function Game() {
 
         changePoints(value);
     };
+
+    setInterval(() => {
+        // handleRunBet();
+    }, 1_500);
 
     return (
         <div className="flex h-fit flex-col items-center justify-center md:flex-row">
