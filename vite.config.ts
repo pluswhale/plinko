@@ -20,7 +20,7 @@ const localIp = getNetworkAddress();
 // https://vitejs.dev/config/
 export default defineConfig({
     plugins: [react()],
-    base: '/whiskers-plinko',
+    base: '/plinko',
     optimizeDeps: {
         exclude: ['typescript'],
     },

@@ -11,8 +11,8 @@ export const Routing: FC = (): ReactElement => {
         <Suspense fallback={<LoaderScreen />}>
             <BrowserRouter>
                 <Routes>
-                    <Route path="/whiskers-plinko" element={<MainPage />} />
-                    <Route path="/whiskers-plinko/payment" element={<PaymentPage />} />
+                    <Route path="/plinko" element={<MainPage />} />
+                    <Route path="/plinko/payment" element={<PaymentPage />} />
                     <Route path="*" element={<div>Not found</div>} />
                 </Routes>
             </BrowserRouter>
