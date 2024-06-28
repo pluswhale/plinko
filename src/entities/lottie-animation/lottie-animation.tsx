@@ -1,4 +1,4 @@
-import Lottie from 'lottie-react';
+import Lottie from 'react-lottie';
 import { FC, ReactElement } from 'react';
 
 type Props = {
@@ -7,7 +7,19 @@ type Props = {
     autoplay?: boolean;
 };
 
-export const LottieAnimation: FC<Props> = ({ animationData, loop, autoplay }): ReactElement => {
-    return <Lottie animationData={animationData} loop={loop} autoplay={autoplay || false} />;
+export const LottieAnimation: FC<Props> = ({ animationData, loop, autoplay }): ReactElement | null => {
+    if (!animationData) {
+        return null; // or render a fallback component/spinner
+    }
+    const defaultOptions = {
+        loop,
+        autoplay: autoplay || false,
+        animationData,
+        rendererSettings: {
+            preserveAspectRatio: 'xMidYMid slice',
+        },
+    };
+
+    return <Lottie options={defaultOptions} />;
 };
 

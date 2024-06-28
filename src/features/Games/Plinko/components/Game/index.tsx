@@ -10,11 +10,15 @@ import { random } from '../../../../../shared/utils/random';
 import { Button } from '../../../../../shared/components/button';
 import styles from './index.module.scss';
 import cat from '../../../../../assets/images/kit.png';
+import catIdle from '../../../../../assets/animations/cat idle.json';
+import catOn4 from '../../../../../assets/animations/cat1.lottie';
+import catOn30 from '../../../../../assets/animations/cat2.lottie';
 import bigCharacter from '../../../../../assets/images/big_character.png';
 import { Input } from '../../../../../shared/components/input/input';
 import { FormProvider, useForm } from 'react-hook-form';
 import { useAppContext } from '../../../../../app/providers/AppContext';
 import { ScoreHistory } from '../score-history/score-history';
+import { LottieAnimation } from '../../../../../entities/lottie-animation/lottie-animation';
 
 export function Game() {
     // #region States
@@ -419,7 +423,11 @@ export function Game() {
         <div className="flex h-fit flex-col items-center justify-center md:flex-row">
             <div className="flex flex-1 items-center justify-center relative">
                 <PlinkoGameBody />
-                {imageLoaded && <img className={styles.game__big_character} src={bigCharacter} />}
+
+                <div className={styles.game__big_character}>
+                    <LottieAnimation animationData={catOn4} loop={0} />
+                </div>
+
                 <ScoreHistory scoreHistory={scoreHistory} />
             </div>
             <div className={styles.game__score}>
