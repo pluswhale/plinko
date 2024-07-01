@@ -425,7 +425,7 @@ export function Game() {
                 <PlinkoGameBody />
 
                 <div className={styles.game__big_character}>
-                    <LottieAnimation animationData={catOn4} loop={0} />
+                    <LottieAnimation animationData={catOn4} loop={1} />
                 </div>
 
                 <ScoreHistory scoreHistory={scoreHistory} />

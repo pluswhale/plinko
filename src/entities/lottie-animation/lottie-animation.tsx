@@ -1,4 +1,5 @@
 import Lottie from 'react-lottie';
+// import { Player } from '@lottiefiles/react-lottie-player';
 import { FC, ReactElement } from 'react';
 
 type Props = {
@@ -9,7 +10,7 @@ type Props = {
 
 export const LottieAnimation: FC<Props> = ({ animationData, loop, autoplay }): ReactElement | null => {
     if (!animationData) {
-        return null; // or render a fallback component/spinner
+        return null;
     }
     const defaultOptions = {
         loop,

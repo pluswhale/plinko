@@ -11,6 +11,7 @@
         "deploy": "gh-pages -d dist"
     },
     "dependencies": {
+        "@lottiefiles/react-lottie-player": "^3.5.4",
         "@ton-community/assets-sdk": "^0.0.4",
         "@ton/core": "^0.56.3",
         "@ton/crypto": "^3.2.0",
