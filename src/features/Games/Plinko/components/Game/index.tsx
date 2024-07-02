@@ -11,7 +11,7 @@ import { Button } from '../../../../../shared/components/button';
 import styles from './index.module.scss';
 import cat from '../../../../../assets/images/kit.png';
 import catIdle from '../../../../../assets/animations/cat idle.json';
-// import catOn4 from '../../../../../assets/animations/cat1.lottie';
+import catOn4 from '../../../../../assets/animations/cat1.json';
 import catOn30 from '../../../../../assets/animations/cat2.json';
 import { Input } from '../../../../../shared/components/input/input';
 import { FormProvider, useForm } from 'react-hook-form';
@@ -307,7 +307,7 @@ export function Game() {
                 break;
             }
             case 4: {
-                setAnimationDisplay('30');
+                setAnimationDisplay('4');
                 setTimeout(() => {
                     setAnimationDisplay('idle');
                 }, 2000);
@@ -444,8 +444,9 @@ export function Game() {
 
                 <div className={styles.game__big_character}>
                     <LottieAnimation
+                        autoplay={true}
                         animationData={
-                            animationDisplay === 'idle' ? catIdle : animationDisplay === '30' ? catOn30 : catOn30
+                            animationDisplay === 'idle' ? catIdle : animationDisplay === '30' ? catOn30 : catOn4
                         }
                         loop={true}
                     />

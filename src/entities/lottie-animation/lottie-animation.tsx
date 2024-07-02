@@ -21,6 +21,6 @@ export const LottieAnimation: FC<Props> = ({ animationData, loop, autoplay }): R
         },
     };
 
-    return <Lottie options={defaultOptions} />;
+    return <Lottie style={{ width: '225px', height: '332px' }} options={defaultOptions} />;
 };
 

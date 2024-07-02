@@ -7,6 +7,9 @@ export default defineConfig({
     optimizeDeps: {
         exclude: ['typescript'],
     },
-    assetsInclude: ['**/*.lottie'],
+    server: {
+        host: '0.0.0.0', // This will make the server accessible externally
+        port: 3000, // Specify your desired port
+    },
 });
 
