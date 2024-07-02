@@ -11,9 +11,8 @@ import { Button } from '../../../../../shared/components/button';
 import styles from './index.module.scss';
 import cat from '../../../../../assets/images/kit.png';
 import catIdle from '../../../../../assets/animations/cat idle.json';
-import catOn4 from '../../../../../assets/animations/cat1.lottie';
-import catOn30 from '../../../../../assets/animations/cat2.lottie';
-import bigCharacter from '../../../../../assets/images/big_character.png';
+// import catOn4 from '../../../../../assets/animations/cat1.lottie';
+import catOn30 from '../../../../../assets/animations/cat2.json';
 import { Input } from '../../../../../shared/components/input/input';
 import { FormProvider, useForm } from 'react-hook-form';
 import { useAppContext } from '../../../../../app/providers/AppContext';
@@ -35,15 +34,16 @@ export function Game() {
     //     count: 0,
     // });
     const [scoreHistory, setScoreHistory] = useState<ScoreHistory[]>([]);
-    const [imageLoaded, setImageLoaded] = useState<boolean>(false);
+    // const [imageLoaded, setImageLoaded] = useState<boolean>(false);
+    const [animationDisplay, setAnimationDisplay] = useState<'30' | '4' | 'idle'>('idle');
 
-    useEffect(() => {
-        const img = new Image();
-        img.onload = () => {
-            setImageLoaded(true);
-        };
-        img.src = bigCharacter; // Start loading the image
-    }, []);
+    // useEffect(() => {
+    //     const img = new Image();
+    //     img.onload = () => {
+    //         setImageLoaded(true);
+    //     };
+    //     img.src = bigCharacter; // Start loading the image
+    // }, []);
 
     const incrementInGameBallsCount = useGameStore((state) => state.incrementGamesRunning);
     const decrementInGameBallsCount = useGameStore((state) => state.decrementGamesRunning);
@@ -297,7 +297,23 @@ export function Game() {
         if (+ballValue <= 0) return;
 
         const newBalance = parseFloat((+ballValue * multiplierValue).toFixed(2)); // Ensure that newBalance is a number with two decimal places
-        console.log('newBalance', newBalance);
+
+        switch (multiplierValue) {
+            case 30: {
+                setAnimationDisplay('30');
+                setTimeout(() => {
+                    setAnimationDisplay('idle');
+                }, 2000);
+                break;
+            }
+            case 4: {
+                setAnimationDisplay('30');
+                setTimeout(() => {
+                    setAnimationDisplay('idle');
+                }, 2000);
+                break;
+            }
+        }
 
         // totalBets += +ballValue;
         // totalWinnings += newBalance;
@@ -313,6 +329,8 @@ export function Game() {
         updateScoreHistory({ id: 0, label: 'x' + multiplierValue, disappears: false, nodeRef: createRef() });
         // }
     }
+
+    console.log('animation display', animationDisplay);
 
     async function onCollideWithPin(pin: Body) {
         const originalFillStyle = '#4D506A';
@@ -425,7 +443,12 @@ export function Game() {
                 <PlinkoGameBody />
 
                 <div className={styles.game__big_character}>
-                    <LottieAnimation animationData={catOn4} loop={1} />
+                    <LottieAnimation
+                        animationData={
+                            animationDisplay === 'idle' ? catIdle : animationDisplay === '30' ? catOn30 : catOn30
+                        }
+                        loop={true}
+                    />
                 </div>
 
                 <ScoreHistory scoreHistory={scoreHistory} />
