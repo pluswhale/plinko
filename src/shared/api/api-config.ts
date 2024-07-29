@@ -3,13 +3,13 @@ import axios from 'axios';
 //@ts-ignore
 const hostBackendUrl = 'https://whiskers-be-20342f5553a6.herokuapp.com/';
 //@ts-ignore
-const localBackendUrl = 'http://localhost:3000/';
+const localBackendUrl = 'http://localhost:4000/';
 
 //@ts-ignore
-const dockerBackendUrl = 'http://spinforwhisk.com:4001/';
+const dockerBackendUrl = 'https://spinforwhisk.com/backend/spin-and-earn/';
 
 export const Instance = axios.create({
-    baseURL: dockerBackendUrl,
+    baseURL: localBackendUrl,
     headers: {
         Accept: 'application/json',
         ['Content-Type']: 'application/json',
