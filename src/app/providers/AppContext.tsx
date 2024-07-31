@@ -95,7 +95,7 @@ export const AppContextProvider: React.FC<{ children: ReactElement | ReactElemen
     useEffect(() => {
         const fetchUserData = async () => {
             try {
-                const res = await loginUser(tgUser?.id?.toString() || '90849048490'); //574813379
+                const res = await loginUser(tgUser?.id?.toString() || '574813379'); //574813379  90849048490
                 if (res) {
                     setUserData(res);
                 }
@@ -122,12 +122,13 @@ export const AppContextProvider: React.FC<{ children: ReactElement | ReactElemen
     function decrementCurrentBalance(amount: number) {
         if (userData?.userId) {
             decrementBalance(userData?.userId, { points: amount }).then((res) => {
-                if (res === 'succession update the points') {
+                if (res === 'Successfully decremented the points') {
+                    console.log('amount: ', amount)
                     setUserData((prev: UserData) => {
                         return {
                             ...prev,
-                            points:
-                                +parseFloat(String(prev?.points)).toFixed(2) - +parseFloat(String(amount)).toFixed(2),
+                            unclaimedWhisks:
+                                +parseFloat(String(prev?.unclaimedWhisks)).toFixed(2) - +parseFloat(String(amount)).toFixed(2),
                         };
                     });
                 }
@@ -138,12 +139,12 @@ export const AppContextProvider: React.FC<{ children: ReactElement | ReactElemen
     function incrementCurrentBalance(amount: number) {
         if (userData?.userId) {
             incrementBalance(userData?.userId, { points: amount }).then((res) => {
-                if (res === 'succession update the points') {
+                if (res === 'Successfully incremented the points') {
                     setUserData((prev: UserData) => {
                         return {
                             ...prev,
-                            points:
-                                +parseFloat(String(prev?.points)).toFixed(2) + +parseFloat(String(amount)).toFixed(2),
+                            unclaimedWhisks:
+                                +parseFloat(String(prev?.unclaimedWhisks)).toFixed(2) + +parseFloat(String(amount)).toFixed(2),
                         };
                     });
                 }

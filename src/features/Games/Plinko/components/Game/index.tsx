@@ -399,8 +399,8 @@ export function Game() {
             return; // Exit the function if the input is not a number
         }
 
-        if (userData?.points && +value > userData?.points) {
-            changePoints(String(userData?.points));
+        if (userData?.unclaimedWhisks && +value > userData?.unclaimedWhisks) {
+            changePoints(String(userData?.unclaimedWhisks));
         }
 
         changePoints(value);
@@ -462,11 +462,11 @@ export function Game() {
                     </FormProvider>
                 </div>
                 <Button
-                    isDisabled={points <= 0 || points > userData?.points}
+                    isDisabled={points <= 0 || points > userData?.unclaimedWhisks}
                     stylesForTexts={{ main: { fontSize: '32px' }, sub: {} }}
                     fontSize="60px"
                     backgroundImage={
-                        points <= 0 || points > userData?.points ? 'linear-gradient(#C0C0C0, #808080)' : undefined
+                        points <= 0 || points > userData?.unclaimedWhisks ? 'linear-gradient(#C0C0C0, #808080)' : undefined
                     }
                     fontFamily="Montserrat, sans-serif"
                     width="40%"
