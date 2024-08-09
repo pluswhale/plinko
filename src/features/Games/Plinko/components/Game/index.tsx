@@ -160,7 +160,7 @@ export function Game() {
     }
 
     async function handleRunBet() {
-        if (inGameBallsCount >= 8) return;
+        if (inGameBallsCount >= Math.min(8, Math.floor(userData?.unclaimedWhisks / points))) return;
         bet(points);
         if (points <= 0) return;
         decrementCurrentBalance(points);
